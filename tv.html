@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>▚ экран ▚</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+    }
+    .room {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 70%);
+    }
+    .tv {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px;
+      height: 400px;
+      background: #1a1a1a;
+      border: 14px solid #2a2a2a;
+      border-radius: 25px;
+      box-shadow: 0 0 70px #2a0000, inset 0 0 25px #000;
+    }
+    .tv-screen {
+      width: 92%;
+      height: 85%;
+      margin: 16px auto 0;
+      background: #0d0d0d;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 0 90px #000;
+      transition: background 0.05s;
+    }
+    .static {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0, 
+        rgba(255,255,255,0.02) 2px, transparent 2px, transparent 4px);
+      pointer-events: none;
+    }
+    .hint {
+      color: #333;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    .back {
+      position: fixed;
+      top: 20px; left: 20px;
+      width: 45px; height: 45px;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div class="room">
+    <div class="tv">
+      <div class="tv-screen" id="tvScreen">
+        <div class="static"></div>
+      </div>
+      <div class="hint">⚡ наблюдай за светом ⚡</div>
+    </div>
+  </div>
+  <div class="back" id="backBtn"></div>
+
+  <!-- Звуковое сопровождение (замени horror.mp3 на свой файл) -->
+  <audio id="horrorAudio" autoplay loop>
+  <source src="horror.mp3" type="audio/mpeg">
+</audio>
+
+  <script>
+    // ----- Вторая половина пароля: "LIS" -----
+    const morseWord = "LIS";
+
+    const morseMap = {
+      'A': '.-','B': '-...','C': '-.-.','D': '-..','E': '.','F': '..-.','G': '--.',
+      'H': '....','I': '..','J': '.---','K': '-.-','L': '.-..','M': '--','N': '-.',
+      'O': '---','P': '.--.','Q': '--.-','R': '.-.','S': '...','T': '-','U': '..-',
+      'V': '...-','W': '.--','X': '-..-','Y': '-.--','Z': '--..'
+    };
+
+    const morseString = morseWord.split('').map(ch => morseMap[ch]).join(' ');
+    const screen = document.getElementById('tvScreen');
+    const backBtn = document.getElementById('backBtn');
+
+    const dotDuration = 200;
+    const dashDuration = 600;
+    const symbolGap = 300;
+    const letterGap = 700;   // пробел между буквами
+    const cyclePause = 2500;
+
+    let index = 0;
+    let timeoutId = null;
+
+    function playMorse() {
+      if (index >= morseString.length) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => { index = 0; playMorse(); }, cyclePause);
+        return;
+      }
+      const char = morseString[index];
+      if (char === '.') {
+        screen.style.background = '#ddd';
+        screen.style.boxShadow = 'inset 0 0 100px #fff';
+        timeoutId = setTimeout(() => {
+          screen.style.background = '#0d0d0d';
+          screen.style.boxShadow = 'inset 0 0 90px #000';
+          index++;
+          timeoutId = setTimeout(playMorse, symbolGap);
+        }, dotDuration);
+      } else if (char === '-') {
+        screen.style.background = '#ddd';
+        screen.style.boxShadow = 'inset 0 0 100px #fff';
+        timeoutId = setTimeout(() => {
+          screen.style.background = '#0d0d0d';
+          screen.style.boxShadow = 'inset 0 0 90px #000';
+          index++;
+          timeoutId = setTimeout(playMorse, symbolGap);
+        }, dashDuration);
+      } else if (char === ' ') {
+        index++;
+        timeoutId = setTimeout(playMorse, letterGap);
+      }
+    }
+
+    playMorse();
+
+    // Возврат на главную (левый верхний угол)
+    backBtn.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+    document.addEventListener('click', (e) => {
+      if (e.clientX < 55 && e.clientY < 55) {
+        window.location.href = 'index.html';
+      }
+    });
+
+    window.addEventListener('beforeunload', () => clearTimeout(timeoutId));
+        // В конце <script> в tv.html добавь:
+    const audio = document.getElementById('horrorAudio');
+    audio.volume = 0.2;  // от 0.0 (тишина) до 1.0 (полная громкость), здесь очень тихо
+  </script>
+</body>
+</html>

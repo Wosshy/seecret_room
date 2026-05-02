@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎃</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+    .fullscreen-image {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    /* Текст поверх (можешь убрать или изменить) */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;   /* чтобы не мешал кликам */
+    }
+
+    .message {
+      color: #b30000;
+      font-family: 'Creepster', cursive;
+      font-size: 5rem;
+      text-shadow: 0 0 30px red;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      padding: 20px 40px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ЗАМЕНИ НА СВОЮ КАРТИНКУ -->
+  <img class="fullscreen-image" src="mell.jpg" alt="Пасхалка">
+
+  <!-- ЗАМЕНИ НА СВОЮ ПЕСНЮ -->
+  <audio autoplay loop>
+    <source src="temny.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="overlay">
+    <h1 class="message">🎃 ТЫ НАШЁЛ 🎃</h1>
+  </div>
+</body>
+</html>
