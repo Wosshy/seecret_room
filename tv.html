@@ -13,6 +13,7 @@
       height: 100vh;
       overflow: hidden;
       font-family: 'Courier New', monospace;
+      cursor: default;
     }
     .room {
       position: relative;
@@ -30,6 +31,7 @@
       border: 14px solid #2a2a2a;
       border-radius: 25px;
       box-shadow: 0 0 70px #2a0000, inset 0 0 25px #000;
+      cursor: pointer;   /* 👈 показываем, что кликабельно */
     }
     .tv-screen {
       width: 92%;
@@ -50,10 +52,11 @@
       pointer-events: none;
     }
     .hint {
-      color: #333;
+      color: #555;
       text-align: center;
       margin-top: 10px;
       font-size: 0.9rem;
+      user-select: none;
     }
     .back {
       position: fixed;
@@ -67,48 +70,66 @@
 </head>
 <body>
   <div class="room">
-    <div class="tv">
+    <div class="tv" id="tvSet">
       <div class="tv-screen" id="tvScreen">
         <div class="static"></div>
       </div>
-      <div class="hint">⚡ наблюдай за светом ⚡</div>
+      <div class="hint" id="hintText">⚡ нажми на экран ⚡</div>
     </div>
   </div>
   <div class="back" id="backBtn"></div>
 
-  <!-- Звуковое сопровождение (замени horror.mp3 на свой файл) -->
+  <!-- Тихая музыка (по‑прежнему фоновая) -->
   <audio id="horrorAudio" autoplay loop>
-  <source src="horror.mp3" type="audio/mpeg">
-</audio>
+    <source src="horror.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     // ----- Вторая половина пароля: "LIS" -----
     const morseWord = "LIS";
-
     const morseMap = {
       'A': '.-','B': '-...','C': '-.-.','D': '-..','E': '.','F': '..-.','G': '--.',
       'H': '....','I': '..','J': '.---','K': '-.-','L': '.-..','M': '--','N': '-.',
       'O': '---','P': '.--.','Q': '--.-','R': '.-.','S': '...','T': '-','U': '..-',
       'V': '...-','W': '.--','X': '-..-','Y': '-.--','Z': '--..'
     };
-
     const morseString = morseWord.split('').map(ch => morseMap[ch]).join(' ');
-    const screen = document.getElementById('tvScreen');
-    const backBtn = document.getElementById('backBtn');
 
-    const dotDuration = 200;
-    const dashDuration = 600;
-    const symbolGap = 300;
-    const letterGap = 700;   // пробел между буквами
-    const cyclePause = 2500;
+    const screen = document.getElementById('tvScreen');
+    const tvSet = document.getElementById('tvSet');
+    const hintText = document.getElementById('hintText');
+    const backBtn = document.getElementById('backBtn');
+    const audio = document.getElementById('horrorAudio');
+    audio.volume = 0.12;   // тихий фон
+
+    // Замедленные интервалы (в миллисекундах)
+    const dotDuration = 400;
+    const dashDuration = 1000;
+    const symbolGap = 400;
+    const letterGap = 1000;
+    const cyclePause = 3000;
 
     let index = 0;
     let timeoutId = null;
+    let playing = false;
+
+    function stopMorse() {
+      clearTimeout(timeoutId);
+      playing = false;
+      screen.style.background = '#0d0d0d';
+      screen.style.boxShadow = 'inset 0 0 90px #000';
+      hintText.textContent = '⚡ нажми на экран ⚡';
+    }
 
     function playMorse() {
+      if (!playing) return;
       if (index >= morseString.length) {
+        // Конец сообщения – пауза и повтор
         clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => { index = 0; playMorse(); }, cyclePause);
+        timeoutId = setTimeout(() => {
+          index = 0;
+          playMorse();
+        }, cyclePause);
         return;
       }
       const char = morseString[index];
@@ -136,9 +157,22 @@
       }
     }
 
-    playMorse();
+    // Запуск / остановка по клику на телевизор
+    tvSet.addEventListener('click', (e) => {
+      e.stopPropagation();  // чтобы не сработал общий обработчик угла
+      if (playing) {
+        // Остановить
+        stopMorse();
+      } else {
+        // Запустить
+        playing = true;
+        index = 0;
+        hintText.textContent = '⚡ идёт передача... ⚡';
+        playMorse();
+      }
+    });
 
-    // Возврат на главную (левый верхний угол)
+    // Возврат на главную: левый верхний угол
     backBtn.addEventListener('click', () => {
       window.location.href = 'index.html';
     });
@@ -149,9 +183,6 @@
     });
 
     window.addEventListener('beforeunload', () => clearTimeout(timeoutId));
-        // В конце <script> в tv.html добавь:
-    const audio = document.getElementById('horrorAudio');
-    audio.volume = 0.2;  // от 0.0 (тишина) до 1.0 (полная громкость), здесь очень тихо
   </script>
 </body>
 </html>
