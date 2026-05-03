@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>▚ экран ▚</title>
+  <title>экран</title>
   <style>
     body {
       margin: 0;
@@ -73,7 +73,7 @@
       <div class="tv-screen" id="tvScreen">
         <div class="static"></div>
       </div>
-      <div class="hint" id="hintText">⚡ нажми на экран ⚡</div>
+      <div class="hint" id="hintText"> нажми на экран </div>
     </div>
   </div>
   <div class="back" id="backBtn"></div>
@@ -117,7 +117,7 @@
       playing = false;
       screen.style.background = '#0d0d0d';
       screen.style.boxShadow = 'inset 0 0 90px #000';
-      hintText.textContent = '⚡ нажми на экран ⚡';
+      hintText.textContent = ' нажми на экран ';
     }
 
     function playMorse() {
@@ -156,7 +156,7 @@
       if (!playing) {
         playing = true;
         index = 0;
-        hintText.textContent = '⚡ идёт передача... ⚡';
+        hintText.textContent = ' идёт передача... ';
         playMorse();
       }
       // повторный клик не прерывает, ждём завершения

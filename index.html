@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Тихое место</title>
+  <title>▚ Тихое место ▚</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap');
 
@@ -105,17 +105,6 @@
       font-size: 1.4rem;
       text-shadow: 0 0 12px red;
     }
-
-    .secret-corner {
-      position: fixed;
-      bottom: 0;
-      right: 0;
-      width: 65px;
-      height: 65px;
-      opacity: 0;
-      z-index: 99;
-      cursor: default;
-    }
   </style>
 </head>
 <body>
@@ -126,16 +115,13 @@
   </div>
   <div class="error" id="errorMsg"></div>
 
-  <div class="secret-corner" id="secretCorner"></div>
-
-  <!-- Закодированная часть SIFI для подсказки (вставь свой hex) -->
+  <!-- Подсказка в F12 остаётся -->
   <!-- ЗАКОДИРОВАННАЯ_ЧАСТЬ_1: ВСТАВЬ_СВОЙ_HEX -->
 
   <script>
     const input = document.getElementById('password');
     const errorMsg = document.getElementById('errorMsg');
     const submitBtn = document.getElementById('submitBtn');
-    const secretCorner = document.getElementById('secretCorner');
 
     function checkPassword() {
       const entered = input.value.trim().toUpperCase();
@@ -154,17 +140,6 @@
     submitBtn.addEventListener('click', checkPassword);
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') checkPassword();
-    });
-
-    secretCorner.addEventListener('click', () => {
-      window.location.href = 'tv.html';
-    });
-
-    document.addEventListener('click', (e) => {
-      const threshold = 65;
-      if (e.clientX > window.innerWidth - threshold && e.clientY > window.innerHeight - threshold) {
-        window.location.href = 'tv.html';
-      }
     });
   </script>
 </body>
