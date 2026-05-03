@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>TV</title>
+  <title>▚ экран ▚</title>
   <style>
     body {
       margin: 0;
@@ -31,7 +31,7 @@
       border: 14px solid #2a2a2a;
       border-radius: 25px;
       box-shadow: 0 0 70px #2a0000, inset 0 0 25px #000;
-      cursor: pointer;   /* 👈 показываем, что кликабельно */
+      cursor: pointer;
     }
     .tv-screen {
       width: 92%;
@@ -55,7 +55,6 @@
       color: #555;
       text-align: center;
       margin-top: 10px;
-      font-size: 0.9rem;
       user-select: none;
     }
     .back {
@@ -74,113 +73,106 @@
       <div class="tv-screen" id="tvScreen">
         <div class="static"></div>
       </div>
-      <div class="hint" id="hintText">нажми на экран</div>
+      <div class="hint" id="hintText">⚡ нажми на экран ⚡</div>
     </div>
   </div>
   <div class="back" id="backBtn"></div>
 
-  <!-- Тихая музыка (по‑прежнему фоновая) -->
   <audio id="horrorAudio" autoplay loop>
     <source src="horror.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-  // ----- Вторая половина пароля: "LIS" -----
-  const morseWord = "LIS";
-  const morseMap = {
-    'A': '.-','B': '-...','C': '-.-.','D': '-..','E': '.','F': '..-.','G': '--.',
-    'H': '....','I': '..','J': '.---','K': '-.-','L': '.-..','M': '--','N': '-.',
-    'O': '---','P': '.--.','Q': '--.-','R': '.-.','S': '...','T': '-','U': '..-',
-    'V': '...-','W': '.--','X': '-..-','Y': '-.--','Z': '--..'
-  };
-  const morseString = morseWord.split('').map(ch => morseMap[ch]).join(' ');
+    // Передаём HEX строку "44656164"
+    const morseHex = "44656164";
+    // Морзе для цифр и букв A-F
+    const morseMap = {
+      '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
+      '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.',
+      'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.'
+    };
 
-  const screen = document.getElementById('tvScreen');
-  const tvSet = document.getElementById('tvSet');
-  const hintText = document.getElementById('hintText');
-  const backBtn = document.getElementById('backBtn');
-  const audio = document.getElementById('horrorAudio');
-  audio.volume = 0.12;
+    const screen = document.getElementById('tvScreen');
+    const tvSet = document.getElementById('tvSet');
+    const hintText = document.getElementById('hintText');
+    const backBtn = document.getElementById('backBtn');
+    const audio = document.getElementById('horrorAudio');
+    audio.volume = 0.12;
 
-  // Замедленные интервалы
-  const dotDuration = 400;
-  const dashDuration = 1000;
-  const symbolGap = 400;
-  const letterGap = 1000;
+    // Формируем строку из символов морзе с пробелами между символами
+    const morseString = morseHex.split('').map(ch => morseMap[ch]).join(' ');
 
-  let index = 0;
-  let timeoutId = null;
-  let playing = false;
+    const dotDuration = 400;
+    const dashDuration = 1000;
+    const symbolGap = 400;
+    const letterGap = 1000;   // между символами
+    const wordGap = 700;      // дополнительный пробел между группами (у нас пробел уже есть)
 
-  function stopMorse() {
-    clearTimeout(timeoutId);
-    playing = false;
-    screen.style.background = '#0d0d0d';
-    screen.style.boxShadow = 'inset 0 0 90px #000';
-    hintText.textContent = 'нажми на экран';
-  }
+    let index = 0;
+    let timeoutId = null;
+    let playing = false;
 
-  function playMorse() {
-    if (!playing) return;
-    if (index >= morseString.length) {
-      // Закончили последовательность — выключаемся и ждём нового клика
-      stopMorse();
-      return;
+    function stopMorse() {
+      clearTimeout(timeoutId);
+      playing = false;
+      screen.style.background = '#0d0d0d';
+      screen.style.boxShadow = 'inset 0 0 90px #000';
+      hintText.textContent = '⚡ нажми на экран ⚡';
     }
-    const char = morseString[index];
-    if (char === '.') {
-      screen.style.background = '#ddd';
-      screen.style.boxShadow = 'inset 0 0 100px #fff';
-      timeoutId = setTimeout(() => {
-        screen.style.background = '#0d0d0d';
-        screen.style.boxShadow = 'inset 0 0 90px #000';
+
+    function playMorse() {
+      if (!playing) return;
+      if (index >= morseString.length) {
+        stopMorse();
+        return;
+      }
+      const char = morseString[index];
+      if (char === '.') {
+        screen.style.background = '#ddd';
+        screen.style.boxShadow = 'inset 0 0 100px #fff';
+        timeoutId = setTimeout(() => {
+          screen.style.background = '#0d0d0d';
+          screen.style.boxShadow = 'inset 0 0 90px #000';
+          index++;
+          timeoutId = setTimeout(playMorse, symbolGap);
+        }, dotDuration);
+      } else if (char === '-') {
+        screen.style.background = '#ddd';
+        screen.style.boxShadow = 'inset 0 0 100px #fff';
+        timeoutId = setTimeout(() => {
+          screen.style.background = '#0d0d0d';
+          screen.style.boxShadow = 'inset 0 0 90px #000';
+          index++;
+          timeoutId = setTimeout(playMorse, symbolGap);
+        }, dashDuration);
+      } else if (char === ' ') {
         index++;
-        timeoutId = setTimeout(playMorse, symbolGap);
-      }, dotDuration);
-    } else if (char === '-') {
-      screen.style.background = '#ddd';
-      screen.style.boxShadow = 'inset 0 0 100px #fff';
-      timeoutId = setTimeout(() => {
-        screen.style.background = '#0d0d0d';
-        screen.style.boxShadow = 'inset 0 0 90px #000';
-        index++;
-        timeoutId = setTimeout(playMorse, symbolGap);
-      }, dashDuration);
-    } else if (char === ' ') {
-      index++;
-      timeoutId = setTimeout(playMorse, letterGap);
+        timeoutId = setTimeout(playMorse, letterGap);
+      }
     }
-  }
 
-  // Запуск / остановка по клику на телевизор
-  tvSet.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (playing) {
-      // Если уже играет — можно прервать (опционально) или ничего не делать.
-      // Здесь по твоему желанию: просто не реагируем на повторный клик.
-      // Если хочешь, чтобы повторный клик прерывал передачу, раскомментируй строку ниже:
-      // stopMorse();
-    } else {
-      // Запускаем
-      playing = true;
-      index = 0;
-      hintText.textContent = ' идёт передача... ';
-      playMorse();
-    }
-  });
+    tvSet.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!playing) {
+        playing = true;
+        index = 0;
+        hintText.textContent = '⚡ идёт передача... ⚡';
+        playMorse();
+      }
+      // повторный клик не прерывает, ждём завершения
+    });
 
-  // Возврат на главную: левый верхний угол
-  backBtn.addEventListener('click', () => {
-    window.location.href = 'index.html';
-  });
-  document.addEventListener('click', (e) => {
-    if (e.clientX < 55 && e.clientY < 55) {
+    // Левый верхний угол — назад
+    backBtn.addEventListener('click', () => {
       window.location.href = 'index.html';
-    }
-  });
+    });
+    document.addEventListener('click', (e) => {
+      if (e.clientX < 55 && e.clientY < 55) {
+        window.location.href = 'index.html';
+      }
+    });
 
-  window.addEventListener('beforeunload', () => clearTimeout(timeoutId));
-</script>
+    window.addEventListener('beforeunload', () => clearTimeout(timeoutId));
   </script>
 </body>
 </html>
